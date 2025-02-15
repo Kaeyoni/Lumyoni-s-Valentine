@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Devine le mot 💖</title>
+    <link rel="icon" href="Valentine’s logo.png" type="image/x-icon">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background: linear-gradient(to bottom, #ffccdd, #ffe6f2);
+        }
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .back-link {
+            display: block;
+            margin-top: 20px;
+            text-decoration: none;
+            color: #ff66b2;
+        }
+        button {
+            background: #ff66b2;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease-in-out;
+            margin: 5px;
+        }
+        button:hover {
+            background: #ff3385;
+            transform: scale(1.1);
+        }
+        #hint {
+            display: none;
+            font-style: italic;
+            color: #ff3385;
+            margin-top: 10px;
+        }
+        .celebration {
+            display: none;
+            font-size: 24px;
+            color: #ff3385;
+            animation: pop 1s infinite alternate;
+        }
+        @keyframes pop {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.2); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Devine le mot 💖</h1>
+        <p id="levelText">Niveau 1 : Essaye de deviner le mot secret !</p>
+        <input type="text" id="guessInput">
+        <button onclick="checkGuess()">Valider</button>
+        <button onclick="showHint()">Indice</button>
+        <p id="hint"></p>
+        <p id="guessResult"></p>
+        <p id="celebration" class="celebration">🎉 Félicitations ! Tu as terminé tous les niveaux ! 🎊</p>
+        <a href="index.html" class="back-link">Retour à l'accueil</a>
+    </div>
+
+    <script>
+        const levels = [
+            { word: "amour", hint: "Ce que je ressens pour toi ❤️" },
+            { word: "bisous", hint: "Je t'en fais beaucoup 😘" },
+            { word: "coeur", hint: "Il bat pour toi 💓" }
+        ];
+        let currentLevel = 0;
+
+        function checkGuess() {
+            const guess = document.getElementById("guessInput").value.toLowerCase();
+            const result = document.getElementById("guessResult");
+            const celebration = document.getElementById("celebration");
+            
+            if (guess === levels[currentLevel].word) {
+                if (currentLevel < levels.length - 1) {
+                    currentLevel++;
+                    document.getElementById("levelText").textContent = `Niveau ${currentLevel + 1} : Essaye de deviner le mot !`;
+                    document.getElementById("hint").style.display = "none";
+                    document.getElementById("guessInput").value = "";
+                    result.textContent = "Bravo ! Passons au niveau suivant ! 🎉";
+                } else {
+                    result.textContent = "";
+                    celebration.style.display = "block";
+                }
+            } else {
+                result.textContent = "Essaye encore !";
+            }
+        }
+        
+        function showHint() {
+            document.getElementById("hint").textContent = levels[currentLevel].hint;
+            document.getElementById("hint").style.display = "block";
+        }
+        
+        document.getElementById("levelText").textContent = `Niveau 1 : Essaye de deviner le mot !`;
+    </script>
+</body>
+</html>

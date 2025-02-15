@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Puzzle Passionné 💖</title>
+    <link rel="icon" href="Valentine’s logo.png" type="image/x-icon">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background: linear-gradient(to bottom, #ffccdd, #ffe6f2);
+        }
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .puzzle-container {
+            display: grid;
+            grid-template-columns: repeat(3, 150px);
+            grid-template-rows: repeat(3, 150px);
+            gap: 5px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .puzzle-piece {
+            width: 150px;
+            height: 150px;
+            background-size: 450px 450px;
+            cursor: pointer;
+            border-radius: 5px;
+            border: 1px solid #ff66b2;
+        }
+        .selected {
+            border: 3px solid #ff3385;
+        }
+        .back-link {
+            display: block;
+            margin-top: 20px;
+            text-decoration: none;
+            color: #ff66b2;
+        }
+        .download-btn {
+            display: none;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #ff66b2;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: transform 0.3s ease, background-color 0.3s ease;
+        }
+        .download-btn:hover {
+            background-color: #ff3385;
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Puzzle Passionné 💖</h1>
+        <p>Reconstitue l'image en cliquant sur les pièces pour les échanger !</p>
+        <div class="puzzle-container" id="puzzleBoard"></div>
+        <p id="message"></p>
+        <button id="downloadBtn" class="download-btn">Télécharger l'illustration 💖</button>
+        <a href="index.html" class="back-link">Retour à l'accueil</a>
+    </div>
+
+    <script>
+        const imageSrc = "Lumyoni_illu.png";
+        let pieces = [];
+        let selectedPiece = null;
+        const puzzleBoard = document.getElementById("puzzleBoard");
+        const downloadBtn = document.getElementById("downloadBtn");
+
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        function createPuzzle() {
+            pieces = [...Array(9).keys()];
+            shuffle(pieces);
+            renderPuzzle();
+        }
+
+        function renderPuzzle() {
+            puzzleBoard.innerHTML = "";
+            pieces.forEach((num, index) => {
+                const piece = document.createElement("div");
+                piece.classList.add("puzzle-piece");
+                piece.style.backgroundImage = `url(${imageSrc})`;
+                piece.style.backgroundPosition = `${-((num % 3) * 150)}px ${-(Math.floor(num / 3) * 150)}px`;
+                piece.dataset.index = index;
+                piece.dataset.correct = num;
+                piece.onclick = () => selectPiece(piece, index);
+                puzzleBoard.appendChild(piece);
+            });
+        }
+
+        function selectPiece(piece, index) {
+            if (!selectedPiece) {
+                selectedPiece = { element: piece, index };
+                piece.classList.add("selected");
+            } else {
+                swapPieces(selectedPiece.index, index);
+                selectedPiece.element.classList.remove("selected");
+                selectedPiece = null;
+            }
+        }
+
+        function swapPieces(index1, index2) {
+            [pieces[index1], pieces[index2]] = [pieces[index2], pieces[index1]];
+            renderPuzzle();
+            checkWin();
+        }
+
+        function checkWin() {
+            if (pieces.every((val, i) => val === i)) {
+                document.getElementById("message").textContent = "Bravo mon coeur ! Tu as réussi le puzzle ! 🎉";
+                downloadBtn.style.display = "block";
+            }
+        }
+
+        downloadBtn.addEventListener("click", function() {
+            const link = document.createElement("a");
+            link.href = imageSrc;
+            link.download = "valentine_puzzle.png";
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        });
+
+        createPuzzle();
+    </script>
+</body>
+</html>

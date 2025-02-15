@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snake Game</title>
+    <link rel="icon" href="Valentine’s logo.png" type="image/x-icon">
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(to bottom, #ffccdd, #ffe6f2)
+        }
+        canvas {
+            background-color: #222;
+            border: 2px solid white;
+            display: none;
+        }
+        button {
+            margin-top: 10px;
+            padding: 10px 20px;
+            font-size: 18px;
+            cursor: pointer;
+        }
+        .back-link {
+            display: block;
+            margin-top: 20px;
+            text-decoration: none;
+            color: #ff66b2;
+        }
+    </style>
+</head>
+<body>
+    <h1>Snake Game 💖</h1>
+    <a href="index.html" class="back-link">Retour à l'accueil</a>
+    <button id="startButton">Start</button>
+    <canvas id="gameCanvas" width="500" height="500"></canvas>
+    <button id="restartButton" style="display: none;">Rejouer</button>
+    
+    <script>
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+        const startButton = document.getElementById("startButton");
+        const restartButton = document.getElementById("restartButton");
+        const gridSize = 20;
+        let snake, direction, food, score, speed, snakeColor;
+        let gameRunning = false;
+        let colorToggle = false;
+
+        function initGame() {
+            snake = [{ x: 200, y: 200 }];
+            direction = "RIGHT";
+            food = { x: Math.floor(Math.random() * 25) * gridSize, y: Math.floor(Math.random() * 25) * gridSize };
+            score = 0;
+            speed = 200;
+            snakeColor = colorToggle ? "red" : "pink";
+            colorToggle = !colorToggle;
+            gameRunning = true;
+            gameLoop();
+        }
+
+        document.addEventListener("keydown", (e) => {
+            const key = e.key;
+            if (key === "ArrowUp" && direction !== "DOWN") direction = "UP";
+            else if (key === "ArrowDown" && direction !== "UP") direction = "DOWN";
+            else if (key === "ArrowLeft" && direction !== "RIGHT") direction = "LEFT";
+            else if (key === "ArrowRight" && direction !== "LEFT") direction = "RIGHT";
+        });
+
+        function update() {
+            const head = { ...snake[0] };
+            if (direction === "UP") head.y -= gridSize;
+            if (direction === "DOWN") head.y += gridSize;
+            if (direction === "LEFT") head.x -= gridSize;
+            if (direction === "RIGHT") head.x += gridSize;
+
+            if (head.x === food.x && head.y === food.y) {
+                score++;
+                food = { x: Math.floor(Math.random() * 25) * gridSize, y: Math.floor(Math.random() * 25) * gridSize };
+                speed = Math.max(50, speed - 5);
+            } else {
+                snake.pop();
+            }
+
+            if (head.x < 0 || head.x >= canvas.width || head.y < 0 || head.y >= canvas.height || snake.some(segment => segment.x === head.x && segment.y === head.y)) {
+                gameRunning = false;
+                alert("Game Over! Score: " + score);
+                canvas.style.display = "none";
+                restartButton.style.display = "block";
+                return;
+            }
+
+            snake.unshift(head);
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = snakeColor;
+            snake.forEach(segment => ctx.fillRect(segment.x, segment.y, gridSize, gridSize));
+            ctx.fillStyle = "red";
+            ctx.fillRect(food.x, food.y, gridSize, gridSize);
+        }
+
+        function gameLoop() {
+            if (!gameRunning) return;
+            update();
+            draw();
+            setTimeout(gameLoop, speed);
+        }
+
+        startButton.addEventListener("click", () => {
+            startButton.style.display = "none";
+            canvas.style.display = "block";
+            initGame();
+        });
+
+        restartButton.addEventListener("click", () => {
+            restartButton.style.display = "none";
+            startButton.style.display = "block";
+        });
+    </script>
+</body>
+</html>
